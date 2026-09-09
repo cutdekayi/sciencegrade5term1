@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Science Quest: Misi Penjelajah Sains</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-deep:#0B1E2D;
+    --bg-panel:#122B3F;
+    --bg-panel-light:#17364E;
+    --line:#26445E;
+    --text-main:#EAF3F5;
+    --text-dim:#9FB7C6;
+    --amber:#F4B942;
+    --teal:#4ECDC4;
+    --coral:#EF6B5D;
+    --violet:#9C8CF2;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    min-height:100vh;
+    background:
+      radial-gradient(1px 1px at 20% 30%, rgba(255,255,255,.35) 0, transparent 100%),
+      radial-gradient(1px 1px at 70% 60%, rgba(255,255,255,.25) 0, transparent 100%),
+      radial-gradient(1.5px 1.5px at 40% 80%, rgba(255,255,255,.3) 0, transparent 100%),
+      radial-gradient(1px 1px at 85% 20%, rgba(255,255,255,.3) 0, transparent 100%),
+      radial-gradient(1px 1px at 10% 75%, rgba(255,255,255,.2) 0, transparent 100%),
+      linear-gradient(180deg, var(--bg-deep), #081420);
+    font-family:'Nunito', sans-serif;
+    color:var(--text-main);
+    display:flex;
+    justify-content:center;
+    padding:24px 14px 60px;
+  }
+  .app{width:100%;max-width:620px;}
+  h1,h2,h3,.display{font-family:'Baloo 2', sans-serif;}
+
+  /* ---- Header ---- */
+  .header{
+    display:flex; align-items:center; justify-content:space-between;
+    margin-bottom:18px;
+  }
+  .brand{display:flex; align-items:center; gap:10px;}
+  .brand-badge{
+    width:42px;height:42px;border-radius:12px;
+    background:linear-gradient(145deg, var(--teal), var(--violet));
+    display:flex;align-items:center;justify-content:center;
+    font-size:22px;
+    box-shadow:0 4px 14px rgba(78,205,196,.25);
+  }
+  .brand-name{font-family:'Baloo 2';font-weight:700;font-size:19px;line-height:1.1;}
+  .brand-sub{font-size:12px;color:var(--text-dim);}
+  .hud{display:flex; gap:8px;}
+  .pill{
+    background:var(--bg-panel); border:1px solid var(--line);
+    border-radius:999px; padding:7px 13px; font-weight:800; font-size:14px;
+    display:flex; align-items:center; gap:6px;
+  }
+  .pill.score{color:var(--amber);}
+  .pill.streak{color:var(--teal);}
+
+  /* ---- Cards / Screens ---- */
+  .screen{display:none;}
+  .screen.active{display:block; animation:rise .35s ease;}
+  @keyframes rise{from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:translateY(0);}}
+
+  .panel{
+    background:var(--bg-panel);
+    border:1px solid var(--line);
+    border-radius:20px;
+    padding:26px 24px;
+  }
+
+  /* ---- Home screen ---- */
+  .hero-title{font-size:30px; font-weight:800; line-height:1.15; margin:6px 0 6px;}
+  .hero-title span{color:var(--amber);}
+  .hero-desc{color:var(--text-dim); font-size:15px; line-height:1.5; margin-bottom:22px;}
+
+  .mission-list{display:flex; flex-direction:column; gap:12px;}
+  .mission-card{
+    background:var(--bg-panel-light);
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:16px 18px;
+    display:flex; align-items:center; gap:14px;
+    cursor:pointer;
+    transition:transform .15s ease, border-color .15s ease;
+    text-align:left;
+  }
+  .mission-card:hover{transform:translateY(-2px); border-color:var(--teal);}
+  .mission-icon{
+    width:46px;height:46px;border-radius:12px;flex:0 0 auto;
+    display:flex;align-items:center;justify-content:center;font-size:24px;
+  }
+  .m1 .mission-icon{background:rgba(78,205,196,.18);}
+  .m2 .mission-icon{background:rgba(156,140,242,.18);}
+  .mission-name{font-family:'Baloo 2'; font-weight:700; font-size:17px; margin-bottom:2px;}
+  .mission-meta{font-size:12.5px; color:var(--text-dim);}
+  .chevron{margin-left:auto; color:var(--text-dim); font-size:20px;}
+
+  /* ---- Progress bar ---- */
+  .progress-wrap{margin-bottom:16px;}
+  .progress-track{
+    height:9px; border-radius:999px; background:var(--bg-panel-light);
+    overflow:hidden; border:1px solid var(--line);
+  }
+  .progress-fill{
+    height:100%; border-radius:999px;
+    background:linear-gradient(90deg, var(--teal), var(--amber));
+    width:0%; transition:width .4s ease;
+  }
+  .progress-label{font-size:12.5px; color:var(--text-dim); margin-top:6px; display:flex; justify-content:space-between;}
+
+  /* ---- Question ---- */
+  .q-tag{
+    display:inline-block; font-size:11.5px; font-weight:800;
+    letter-spacing:.02em; color:var(--bg-deep); background:var(--amber);
+    padding:3px 10px; border-radius:999px; margin-bottom:12px;
+  }
+  .q-text{font-size:19px; font-weight:700; line-height:1.4; margin-bottom:18px;}
+  .options{display:flex; flex-direction:column; gap:10px;}
+  .option{
+    text-align:left;
+    background:var(--bg-panel-light);
+    border:2px solid var(--line);
+    color:var(--text-main);
+    border-radius:14px;
+    padding:13px 16px;
+    font-family:'Nunito'; font-size:15px; font-weight:600;
+    cursor:pointer;
+    display:flex; align-items:center; gap:10px;
+    transition:border-color .15s ease, background .15s ease, transform .1s ease;
+  }
+  .option:hover{border-color:var(--teal); transform:translateY(-1px);}
+  .option .key{
+    width:26px;height:26px;border-radius:8px;flex:0 0 auto;
+    background:var(--bg-deep); display:flex;align-items:center;justify-content:center;
+    font-family:'Baloo 2'; font-weight:700; font-size:13px; color:var(--text-dim);
+  }
+  .option.correct{border-color:var(--teal); background:rgba(78,205,196,.15);}
+  .option.correct .key{background:var(--teal); color:var(--bg-deep);}
+  .option.wrong{border-color:var(--coral); background:rgba(239,107,93,.15);}
+  .option.wrong .key{background:var(--coral); color:var(--bg-deep);}
+  .option:disabled{cursor:default;}
+  .option:disabled:hover{transform:none;}
+
+  .feedback{
+    margin-top:16px; padding:14px 16px; border-radius:14px;
+    font-size:14.5px; line-height:1.5; display:none;
+  }
+  .feedback.show{display:block; animation:rise .25s ease;}
+  .feedback.ok{background:rgba(78,205,196,.12); border:1px solid var(--teal);}
+  .feedback.no{background:rgba(239,107,93,.12); border:1px solid var(--coral);}
+  .feedback strong{font-family:'Baloo 2'; display:block; margin-bottom:3px; font-size:15.5px;}
+
+  .next-btn{
+    margin-top:18px; width:100%; padding:14px; border:none; border-radius:14px;
+    background:var(--amber); color:#2A1B00; font-family:'Baloo 2'; font-weight:700;
+    font-size:16px; cursor:pointer; display:none;
+  }
+  .next-btn.show{display:block;}
+  .next-btn:active{transform:scale(.98);}
+
+  /* ---- Field Notes (short-answer bonus) ---- */
+  .note-box{
+    width:100%; margin-top:14px; border-radius:14px; border:2px dashed var(--line);
+    background:var(--bg-panel-light); color:var(--text-main); font-family:'Nunito';
+    font-size:14.5px; padding:12px 14px; resize:none; min-height:64px;
+  }
+  .note-box:focus{outline:none; border-color:var(--violet);}
+  .reveal-btn{
+    margin-top:10px; background:transparent; border:1px solid var(--line);
+    color:var(--teal); font-family:'Baloo 2'; font-weight:700; font-size:14px;
+    padding:9px 14px; border-radius:10px; cursor:pointer;
+  }
+  .reveal-btn:hover{border-color:var(--teal);}
+  .model-answer{
+    display:none; margin-top:12px; padding:12px 14px; border-radius:12px;
+    background:rgba(156,140,242,.14); border:1px solid var(--violet); font-size:14px; line-height:1.5;
+  }
+  .model-answer.show{display:block; animation:rise .25s ease;}
+  .model-answer strong{color:var(--violet); font-family:'Baloo 2'; display:block; margin-bottom:4px;}
+
+  /* ---- Results ---- */
+  .result-emoji{font-size:56px; text-align:center; margin-bottom:6px;}
+  .result-title{font-size:24px; font-weight:800; text-align:center; margin-bottom:4px;}
+  .result-sub{text-align:center; color:var(--text-dim); font-size:14.5px; margin-bottom:22px;}
+  .stat-row{display:flex; gap:10px; margin-bottom:22px;}
+  .stat-box{
+    flex:1; background:var(--bg-panel-light); border:1px solid var(--line);
+    border-radius:14px; padding:14px; text-align:center;
+  }
+  .stat-num{font-family:'Baloo 2'; font-size:22px; font-weight:800; color:var(--amber);}
+  .stat-label{font-size:11.5px; color:var(--text-dim); margin-top:2px;}
+  .btn-row{display:flex; gap:10px;}
+  .btn{
+    flex:1; padding:13px; border-radius:14px; border:none; cursor:pointer;
+    font-family:'Baloo 2'; font-weight:700; font-size:15px;
+  }
+  .btn.primary{background:var(--teal); color:#04211E;}
+  .btn.ghost{background:transparent; border:1px solid var(--line); color:var(--text-main);}
+
+  .back-link{
+    display:inline-flex; align-items:center; gap:6px; color:var(--text-dim);
+    font-size:13.5px; font-weight:700; cursor:pointer; margin-bottom:14px; user-select:none;
+  }
+  .back-link:hover{color:var(--teal);}
+
+  @media (max-width:420px){
+    .panel{padding:20px 16px;}
+    .hero-title{font-size:25px;}
+    .q-text{font-size:17px;}
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <div class="header">
+    <div class="brand">
+      <div class="brand-badge">🔭</div>
+      <div>
+        <div class="brand-name">Science Quest</div>
+        <div class="brand-sub">Cambridge Primary Year 5</div>
+      </div>
+    </div>
+    <div class="hud">
+      <div class="pill score">⭐ <span id="hud-score">0</span></div>
+      <div class="pill streak">🔥 <span id="hud-streak">0</span></div>
+    </div>
+  </div>
+
+  <!-- HOME SCREEN -->
+  <div class="screen active" id="screen-home">
+    <div class="panel">
+      <div class="hero-title">Selamat datang, Penjelajah! <span>Pilih misimu.</span></div>
+      <div class="hero-desc">Jawab soal, kumpulkan bintang, dan buktikan kamu ahli sains Kelas 5! Setiap misi punya 10–12 soal pilihan ganda plus catatan lapangan bonus.</div>
+      <div class="mission-list">
+        <div class="mission-card m1" onclick="startMission(0)">
+          <div class="mission-icon">🧲</div>
+          <div>
+            <div class="mission-name">Misi 1 · Makhluk Hidup, Materi & Gaya</div>
+            <div class="mission-meta">10 soal pilihan ganda + 2 catatan lapangan</div>
+          </div>
+          <div class="chevron">›</div>
+        </div>
+        <div class="mission-card m2" onclick="startMission(1)">
+          <div class="mission-icon">🪐</div>
+          <div>
+            <div class="mission-name">Misi 2 · Bumi, Cahaya, Bunyi & Listrik</div>
+            <div class="mission-meta">12 soal pilihan ganda + 2 catatan lapangan</div>
+          </div>
+          <div class="chevron">›</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- QUIZ SCREEN -->
+  <div class="screen" id="screen-quiz">
+    <div class="back-link" onclick="goHome()">‹ Kembali ke Markas</div>
+    <div class="progress-wrap">
+      <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+      <div class="progress-label"><span id="progress-text">Soal 1 dari 10</span><span id="mission-label">Misi 1</span></div>
+    </div>
+    <div class="panel">
+      <div id="quiz-body"></div>
+    </div>
+  </div>
+
+  <!-- RESULT SCREEN -->
+  <div class="screen" id="screen-result">
+    <div class="panel">
+      <div class="result-emoji" id="result-emoji">🏆</div>
+      <div class="result-title" id="result-title">Misi Selesai!</div>
+      <div class="result-sub" id="result-sub">Kerja bagus, Penjelajah.</div>
+      <div class="stat-row">
+        <div class="stat-box"><div class="stat-num" id="res-correct">0</div><div class="stat-label">BENAR</div></div>
+        <div class="stat-box"><div class="stat-num" id="res-total">0</div><div class="stat-label">TOTAL SOAL</div></div>
+        <div class="stat-box"><div class="stat-num" id="res-percent">0%</div><div class="stat-label">SKOR</div></div>
+      </div>
+      <div class="btn-row">
+        <button class="btn ghost" onclick="goHome()">Markas</button>
+        <button class="btn primary" onclick="retryMission()">Ulangi Misi</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+/* ---------------- DATA ---------------- */
+const missions = [
+  {
+    title:"Misi 1 · Makhluk Hidup, Materi & Gaya",
+    questions:[
+      {q:"Ciri apa yang dimiliki semua makhluk hidup?", opts:["Bisa berpindah tempat","Membutuhkan energi","Bisa membuat makanan sendiri","Memiliki tulang"], correct:1, explain:"Semua makhluk hidup membutuhkan energi untuk hidup, tumbuh, dan bergerak — meskipun tidak semuanya bisa berpindah tempat, membuat makanan sendiri, atau memiliki tulang."},
+      {q:"Organ apa yang memompa darah ke seluruh tubuh manusia?", opts:["Paru-paru","Jantung","Lambung","Otak"], correct:1, explain:"Jantung adalah otot yang memompa darah ke seluruh tubuh melalui pembuluh darah."},
+      {q:"Sistem tubuh mana yang bertugas mengambil oksigen ke dalam tubuh?", opts:["Sistem pencernaan","Sistem pernapasan","Sistem rangka","Sistem saraf"], correct:1, explain:"Sistem pernapasan (paru-paru dan saluran napas) mengambil oksigen dan mengeluarkan karbon dioksida."},
+      {q:"Material apa yang biasanya menjadi konduktor listrik terbaik?", opts:["Tembaga","Karet","Plastik","Kayu"], correct:0, explain:"Tembaga adalah logam sehingga menghantarkan listrik dengan sangat baik, sedangkan karet, plastik, dan kayu adalah isolator."},
+      {q:"Mengapa pegangan panci sering terbuat dari plastik?", opts:["Plastik mengkilap","Plastik adalah isolator panas yang baik","Plastik bersifat magnetis","Plastik langsung meleleh"], correct:1, explain:"Plastik menghambat perpindahan panas (isolator panas), jadi pegangan tidak ikut panas saat memasak."},
+      {q:"Apa yang terjadi pada kebanyakan zat padat saat dipanaskan?", opts:["Memuai (mengembang)","Menghilang","Selalu menjadi gas","Menjadi lebih dingin"], correct:0, explain:"Saat dipanaskan, partikel bergetar lebih cepat dan menempati lebih banyak ruang, sehingga benda padat memuai."},
+      {q:"Gaya apa yang menarik benda ke arah Bumi?", opts:["Gesekan","Gravitasi","Magnetisme","Gaya angkat"], correct:1, explain:"Gravitasi adalah gaya tarik Bumi terhadap semua benda di sekitarnya."},
+      {q:"Ke arah mana gaya gesek biasanya bekerja?", opts:["Searah dengan gerakan","Berlawanan dengan arah gerakan","Hanya ke atas","Hanya ke bawah"], correct:1, explain:"Gaya gesek selalu melawan arah gerak suatu benda, sehingga memperlambatnya."},
+      {q:"Perubahan mana yang bersifat reversibel (bisa kembali seperti semula)?", opts:["Membakar kertas","Memasak telur","Mencairnya es","Besi berkarat"], correct:2, explain:"Es yang mencair menjadi air bisa dibekukan kembali menjadi es — ini perubahan fisika yang reversibel, berbeda dari membakar, memasak, atau berkarat yang tidak bisa dibalik."},
+      {q:"Sifat material apa yang paling penting saat memilih bahan jas hujan?", opts:["Kedap air (waterproof)","Bersifat magnetis","Transparan","Mudah pecah (getas)"], correct:0, explain:"Jas hujan harus kedap air agar tubuh tetap kering saat hujan."}
+    ],
+    notes:[
+      {q:"Seorang murid mendorong mobil mainan yang sama di atas karpet (42 cm), kayu (68 cm), dan keramik licin (91 cm). Permukaan mana yang memiliki gesekan paling besar? Jelaskan menggunakan data tersebut!", model:"Karpet memiliki gesekan paling besar, karena mobil hanya menempuh jarak terpendek (42 cm) — semakin besar gesekan, semakin cepat mobil berhenti."},
+      {q:"Sebuah sendok logam dan sendok kayu diletakkan di ruangan yang sama selama beberapa jam sehingga suhunya sama. Namun sendok logam terasa lebih dingin. Mengapa?", model:"Logam menghantarkan panas dari tanganmu lebih cepat daripada kayu, sehingga terasa lebih dingin walaupun suhunya sebenarnya sama."}
+    ]
+  },
+  {
+    title:"Misi 2 · Bumi, Cahaya, Bunyi & Listrik",
+    questions:[
+      {q:"Benda apa yang berada di pusat Tata Surya kita?", opts:["Bumi","Bulan","Matahari","Jupiter"], correct:2, explain:"Matahari berada di pusat Tata Surya, dan semua planet mengelilinginya."},
+      {q:"Mengapa kita mengalami siang dan malam di Bumi?", opts:["Bumi bergerak mengelilingi Matahari","Bulan menutupi Matahari setiap hari","Matahari bergerak mengelilingi Bumi","Bumi berotasi (berputar) pada porosnya"], correct:3, explain:"Rotasi Bumi pada porosnya membuat sebagian permukaan menghadap Matahari (siang) dan sebagian membelakanginya (malam)."},
+      {q:"Berapa lama waktu yang dibutuhkan Bumi untuk mengelilingi Matahari?", opts:["24 jam","7 hari","1 bulan","1 tahun"], correct:3, explain:"Bumi membutuhkan waktu sekitar satu tahun (365 hari) untuk satu kali revolusi mengelilingi Matahari."},
+      {q:"Pernyataan mana tentang Bulan yang benar?", opts:["Bulan menghasilkan cahayanya sendiri","Bulan memantulkan cahaya dari Matahari","Bulan adalah bintang","Bulan lebih besar dari Matahari"], correct:1, explain:"Bulan tidak memancarkan cahaya sendiri — kita melihatnya bersinar karena memantulkan cahaya Matahari."},
+      {q:"Material apa yang meloloskan sebagian besar cahaya?", opts:["Kaca bening (transparan)","Kayu","Karton","Logam"], correct:0, explain:"Kaca bening bersifat transparan sehingga hampir semua cahaya bisa melewatinya."},
+      {q:"Bayangan terbentuk ketika cahaya:", opts:["Dihasilkan oleh bayangan","Dihalangi oleh benda buram (opak)","Dipantulkan oleh udara","Diserap oleh Matahari"], correct:1, explain:"Bayangan muncul ketika benda opak (buram) menghalangi jalannya cahaya."},
+      {q:"Bunyi dihasilkan oleh:", opts:["Getaran (vibrasi)","Bayangan","Gravitasi","Sinar cahaya"], correct:0, explain:"Semua bunyi berasal dari getaran suatu benda yang merambat melalui medium seperti udara."},
+      {q:"Perubahan apa yang biasanya membuat bunyi menjadi lebih keras?", opts:["Getaran lebih kecil","Getaran lebih besar","Cahaya lebih lambat","Getaran lebih sedikit"], correct:1, explain:"Getaran yang lebih besar (amplitudo lebih besar) menghasilkan bunyi yang lebih keras."},
+      {q:"Komponen apa yang dibutuhkan agar rangkaian listrik sederhana bisa menyala?", opts:["Jalur yang lengkap (tertutup)","Bayangan","Hanya cermin","Hanya magnet"], correct:0, explain:"Rangkaian listrik membutuhkan jalur tertutup yang lengkap agar arus listrik bisa mengalir."},
+      {q:"Material mana yang paling mungkin menghantarkan listrik?", opts:["Tembaga","Karet","Kaca","Kayu kering"], correct:0, explain:"Tembaga adalah logam sehingga merupakan konduktor listrik yang baik, berbeda dari karet, kaca, dan kayu kering yang merupakan isolator."},
+      {q:"Dua bohlam identik dipasang dalam rangkaian seri. Jika rangkaian terputus di satu titik, apa yang terjadi?", opts:["Kedua bohlam mati","Satu bohlam tetap menyala","Kedua bohlam mati (rangkaian terbuka)","Tidak terjadi apa-apa"], correct:2, explain:"Dalam rangkaian seri, jika terputus di satu titik saja, seluruh rangkaian menjadi terbuka sehingga kedua bohlam mati."},
+      {q:"Planet mana yang terkenal dengan cincinnya yang menonjol?", opts:["Merkurius","Venus","Saturnus","Mars"], correct:2, explain:"Saturnus terkenal dengan sistem cincin besar yang terbuat dari es dan batuan yang mengelilinginya."}
+    ],
+    notes:[
+      {q:"Seorang murid berdiri 1 m dari lampu dan meletakkan benda kecil di antara lampu dan dinding, lalu menggeser benda itu mendekati lampu. Prediksikan apa yang terjadi pada bayangan di dinding dan jelaskan mengapa!", model:"Bayangan di dinding akan menjadi lebih besar, karena saat benda didekatkan ke sumber cahaya, cahaya yang terhalang menyebar lebih lebar sebelum mengenai dinding."},
+      {q:"Sebuah senar gitar dipetik pelan lalu dipetik kuat. Bandingkan kedua bunyi tersebut dari segi getarannya!", model:"Petikan kuat menghasilkan getaran yang lebih besar sehingga bunyi terdengar lebih keras, sedangkan petikan pelan menghasilkan getaran lebih kecil dan bunyi lebih lembut."}
+    ]
+  }
+];
+
+/* ---------------- STATE ---------------- */
+let state = {
+  missionIndex:0,
+  qIndex:0,
+  correctCount:0,
+  answered:false,
+  score:0,
+  streak:0,
+  phase:"questions" // "questions" -> "notes"
+};
+
+/* ---------------- NAV ---------------- */
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+function goHome(){ showScreen('screen-home'); }
+
+function startMission(idx){
+  state = {missionIndex:idx, qIndex:0, correctCount:0, answered:false, score:state.score, streak:state.streak, phase:"questions"};
+  document.getElementById('mission-label').textContent = "Misi " + (idx+1);
+  showScreen('screen-quiz');
+  renderQuestion();
+}
+function retryMission(){ startMission(state.missionIndex); }
+
+function updateHud(){
+  document.getElementById('hud-score').textContent = state.score;
+  document.getElementById('hud-streak').textContent = state.streak;
+}
+
+/* ---------------- QUIZ RENDER ---------------- */
+function renderQuestion(){
+  const mission = missions[state.missionIndex];
+  const totalQ = mission.questions.length;
+  const totalNotes = mission.notes.length;
+  const totalSteps = totalQ + totalNotes;
+
+  if(state.phase === "questions" && state.qIndex >= totalQ){
+    state.phase = "notes";
+    state.qIndex = 0;
+  }
+  if(state.phase === "notes" && state.qIndex >= totalNotes){
+    finishMission();
+    return;
+  }
+
+  const stepNow = state.phase === "questions" ? state.qIndex + 1 : totalQ + state.qIndex + 1;
+  document.getElementById('progress-text').textContent = "Soal " + stepNow + " dari " + totalSteps;
+  document.getElementById('progress-fill').style.width = (stepNow-1)/totalSteps*100 + "%";
+
+  const body = document.getElementById('quiz-body');
+
+  if(state.phase === "questions"){
+    const item = mission.questions[state.qIndex];
+    state.answered = false;
+    body.innerHTML = `
+      <div class="q-tag">PILIHAN GANDA</div>
+      <div class="q-text">${item.q}</div>
+      <div class="options" id="opts"></div>
+      <div class="feedback" id="feedback"></div>
+      <button class="next-btn" id="next-btn" onclick="nextStep()">Lanjut ›</button>
+    `;
+    const optsWrap = document.getElementById('opts');
+    const letters = ['A','B','C','D'];
+    item.opts.forEach((opt,i)=>{
+      const btn = document.createElement('button');
+      btn.className = 'option';
+      btn.innerHTML = `<span class="key">${letters[i]}</span><span>${opt}</span>`;
+      btn.onclick = ()=>selectAnswer(i, item);
+      optsWrap.appendChild(btn);
+    });
+  } else {
+    const item = mission.notes[state.qIndex];
+    body.innerHTML = `
+      <div class="q-tag" style="background:var(--violet); color:#fff;">CATATAN LAPANGAN</div>
+      <div class="q-text">${item.q}</div>
+      <textarea class="note-box" placeholder="Tulis jawabanmu di sini..."></textarea>
+      <button class="reveal-btn" onclick="revealNote(this)">Lihat Jawaban Model</button>
+      <div class="model-answer" id="model-ans"><strong>Jawaban Model</strong>${item.model}</div>
+      <button class="next-btn show" onclick="nextStep()">Lanjut ›</button>
+    `;
+  }
+}
+
+function selectAnswer(i, item){
+  if(state.answered) return;
+  state.answered = true;
+  const opts = document.querySelectorAll('#opts .option');
+  opts.forEach((o,idx)=>{
+    o.disabled = true;
+    if(idx === item.correct) o.classList.add('correct');
+    else if(idx === i) o.classList.add('wrong');
+  });
+  const fb = document.getElementById('feedback');
+  const nextBtn = document.getElementById('next-btn');
+  if(i === item.correct){
+    state.correctCount++;
+    state.score += 10 + state.streak*2;
+    state.streak++;
+    fb.className = 'feedback ok show';
+    fb.innerHTML = `<strong>Benar! ⭐</strong>${item.explain}`;
+  } else {
+    state.streak = 0;
+    fb.className = 'feedback no show';
+    fb.innerHTML = `<strong>Belum tepat</strong>${item.explain}`;
+  }
+  updateHud();
+  nextBtn.classList.add('show');
+}
+
+function revealNote(btn){
+  document.getElementById('model-ans').classList.add('show');
+  btn.style.display = 'none';
+}
+
+function nextStep(){
+  state.qIndex++;
+  renderQuestion();
+}
+
+function finishMission(){
+  const mission = missions[state.missionIndex];
+  const total = mission.questions.length;
+  const pct = Math.round(state.correctCount/total*100);
+  document.getElementById('res-correct').textContent = state.correctCount;
+  document.getElementById('res-total').textContent = total;
+  document.getElementById('res-percent').textContent = pct + "%";
+  let emoji, title, sub;
+  if(pct >= 90){ emoji="🏆"; title="Ahli Sains Sejati!"; sub="Nyaris sempurna — kamu benar-benar memahami misi ini."; }
+  else if(pct >= 70){ emoji="🚀"; title="Misi Berhasil!"; sub="Kerja bagus, Penjelajah — teruskan!"; }
+  else if(pct >= 50){ emoji="🔬"; title="Sedang Menuju Hebat"; sub="Cukup baik! Coba ulangi untuk skor lebih tinggi."; }
+  else { emoji="🧪"; title="Terus Berlatih"; sub="Jangan menyerah — ulangi misi ini untuk berlatih lagi."; }
+  document.getElementById('result-emoji').textContent = emoji;
+  document.getElementById('result-title').textContent = title;
+  document.getElementById('result-sub').textContent = sub;
+  showScreen('screen-result');
+}
+</script>
+</body>
+</html>
